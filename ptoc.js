@@ -1,6 +1,6 @@
 mw.loader.using( 'jquery.throttle-debounce', function () {
 	$( function () {
-		var $window, $mwPanel, $floatTOC, scrollHandler,
+		var $window, $floatTOC, scrollHandler,
 			tocLimit, headingOffsets, headingThreshold,
 			$toc = $( '#toc' );
 
@@ -44,14 +44,15 @@ mw.loader.using( 'jquery.throttle-debounce', function () {
 		// For the window scroll event
 		scrollHandler = function () {
 			var $current,
+			isVe = ve.init && ve.init.target.active === true,
+			isMobile = window.matchMedia('(max-width: 1100px)').matches,
+			isVisible = $floatTOC.css('visibility') === 'visible',
 			scrollTop = $window.scrollTop();
-
-			if ( scrollTop > tocLimit ) {
-				$floatTOC.css( {
+			if ( !isMobile && !isVe && scrollTop > tocLimit ) {
+				if (!isVisible) $floatTOC.css( {
 					visibility: 'visible',
 					opacity: 1
 				} );
-				$mwPanel.hide();
 
 				// Highlight current
 				var highlight = false;
@@ -70,12 +71,11 @@ mw.loader.using( 'jquery.throttle-debounce', function () {
 					$current.css( 'font-weight', 'bold' );
 				}
 
-			} else {
+			} else if ( isVisible ) {
 				$floatTOC.css( {
 					visibility: 'hidden',
 					opacity: 0
 				} );
-				$mwPanel.show();
 			}
 		}
 
